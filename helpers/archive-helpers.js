@@ -26,6 +26,63 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
+
+
+exports.readListOfUrlsAsync = function() {
+  return new Promise ((resolve, reject) => {
+    fs.readFile(exports.paths.list, function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data.toString().split('\n'));
+      }
+    });
+  });
+};
+
+exports.isUrlInListAsync = function(url) {
+  return new Promise ((resolve, reject) => {
+    fs.readFile(exports.paths.list, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      let array = data.toString().split('\n');
+      for (let i = 0; i < array.length; i++ ) {
+        if (array[i] === url) {
+          return resolve(true);
+        }
+      }
+      return resolve(false);
+    });
+  });
+};
+
+exports.addUrlToListAsync = function(url) {
+  return new Promise ((resolve, reject) => {
+    fs.appendFile(exports.paths.list, url + '\n', function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+exports.isUrlArchivedAsync = function(url) {
+  return new Promise ((resolve, reject) => {
+    fs.readFile(exports.paths.archivedSites + '/' + url, function(err, data) {
+      if (err) {
+        reject(false);
+      } else {
+        resolve(true); 
+      }
+    });
+  });
+};
+
+//callback version
+
 exports.readListOfUrls = function(callback) {
   fs.readFile(exports.paths.list, function(err, data) {
     callback(data.toString().split('\n'));
@@ -77,3 +134,4 @@ exports.downloadUrls = function(urls) {
     });
   }
 };
+
