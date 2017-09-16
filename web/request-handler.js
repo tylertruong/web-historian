@@ -3,7 +3,6 @@ var archive = require('../helpers/archive-helpers');
 var http = require('../web/http-helpers');
 var fs = require('fs');
 var urlParser = require('url');
-var request = require('request');
 
 
 // require more modules/folders here!
