@@ -3,6 +3,7 @@ var archive = require('../helpers/archive-helpers');
 var http = require('../web/http-helpers');
 var fs = require('fs');
 var urlParser = require('url');
+var request = require('request');
 
 
 // require more modules/folders here!
@@ -14,7 +15,7 @@ exports.handleRequest = function (req, res) {
   console.log('the method is: ' + method + ' and the url is: ' + url);
 
 
-  var responder = function (err, data, status) {
+  var responder = function (err, data) {
     if (err) {
       res.writeHead(404, http.headers);
       res.end();
@@ -38,16 +39,23 @@ exports.handleRequest = function (req, res) {
     req.on('end', () => {
       body = body.toString();
       let baseUrl = body.substring(4);
-      console.log('baseurl', baseUrl);
-      fs.appendFile(archive.paths.list, baseUrl + '\n', function(err, data) {
-        if (err) {
-          console.log('error!');
+      
+      //archive.isUrlArchived(baseUrl, boolean => {
+      archive.isUrlArchived(baseUrl, boolean => {
+        console.log(boolean);
+        if (boolean) {
+          fs.readFile(archive.paths.archivedSites + '/' + baseUrl, (err, data) => {
+            res.writeHead(201, http.headers);
+            res.end(data.toString());
+          });
+        } else {
+          archive.addUrlToList(baseUrl, () => { return; });
+          res.writeHead(302, http.headers);
+          fs.readFile(archive.paths.siteAssets + '/loading.html', function(err, data) {
+            res.end(data.toString());
+          });
         }
-        console.log('appended!');
       });
-      res.writeHead(302, http.headers);
-      res.end();
     });
   }
-
 };
