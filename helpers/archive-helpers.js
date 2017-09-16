@@ -63,5 +63,12 @@ exports.isUrlArchived = function(url, callback) {
 
 
 exports.downloadUrls = function(urls) {
-  
+  for (var i = 0; i < urls.length; i++) {
+    var filePath = exports.paths.archivedSites + '/' + urls[i];
+    var fd = fs.open(filePath, 'w', (err, fd) => {
+      fs.close(fd, () => {
+        return;
+      });
+    });
+  }
 };
