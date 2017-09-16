@@ -24,6 +24,11 @@ exports.serveAssets = function(res, asset, callback) {
 
   if (asset.indexOf('.css') >= 0) {
     fullPath = path.join(archive.paths.siteAssets, asset);
+    fs.readFile(fullPath, function(err, data) {
+      res.writeHead(200, {'Content-Type': 'text/css'});
+      res.end(data.toString());
+    });
+
   }
 
   fs.readFile(fullPath, function(err, data) {
