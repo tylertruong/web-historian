@@ -41,17 +41,17 @@ exports.handleRequest = function (req, res) {
       
       //archive.isUrlArchived(baseUrl, boolean => {
       archive.isUrlArchived(baseUrl, boolean => {
-        console.log(boolean);
         if (boolean) {
           fs.readFile(archive.paths.archivedSites + '/' + baseUrl, (err, data) => {
-            res.writeHead(201, http.headers);
+            res.writeHead(302, http.headers);
             res.end(data.toString());
           });
         } else {
-          archive.addUrlToList(baseUrl, () => { return; });
-          res.writeHead(302, http.headers);
-          fs.readFile(archive.paths.siteAssets + '/loading.html', function(err, data) {
-            res.end(data.toString());
+          archive.addUrlToList(baseUrl, () => {
+            res.writeHead(302, http.headers);
+            fs.readFile(archive.paths.siteAssets + '/loading.html', function(err, data) {
+              res.end(data.toString());
+            });
           });
         }
       });

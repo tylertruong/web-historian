@@ -34,8 +34,8 @@ exports.readListOfUrls = function(callback) {
 
 exports.isUrlInList = function(url, callback) {
   fs.readFile(exports.paths.list, function(err, data) {
-    var array = data.toString().split('\n');
-    for (var i = 0; i < array.length; i++ ) {
+    let array = data.toString().split('\n');
+    for (let i = 0; i < array.length; i++ ) {
       if (array[i] === url) {
         return callback(true);
       }
@@ -68,6 +68,11 @@ exports.downloadUrls = function(urls) {
     let filePath = exports.paths.archivedSites + '/' + urls[i];
     request('http://' + urls[i], (error, response, html) => {
       fs.writeFile(filePath, html, (err) =>{
+        if (i = urls.length - 1) {
+          fs.writeFile(exports.paths.list, '', err => {
+            console.log(err);
+          });
+        }
       });
     });
   }
