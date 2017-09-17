@@ -47,8 +47,14 @@ exports.handleRequest = function (req, res) {
           if (boolean) {
             return fsp.readFileAsync(archive.paths.archivedSites + '/' + baseUrl);
           } else {
-            return archive.addUrlToListAsync(baseUrl).then(() => {
-              return fsp.readFileAsync(archive.paths.siteAssets + '/loading.html');
+            return archive.isUrlInListAsync(baseUrl).then((boolean) => {
+              if (boolean) {
+                return fsp.readFileAsync(archive.paths.siteAssets + '/loading.html');
+              } else {
+                return archive.addUrlToListAsync(baseUrl).then(() => {
+                  return fsp.readFileAsync(archive.paths.siteAssets + '/loading.html');
+                });
+              }
             });
           }
         }).then((data) => {
