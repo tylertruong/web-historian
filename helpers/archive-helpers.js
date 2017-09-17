@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var request = require('request');
+var Promise = require('Bluebird');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -73,7 +74,7 @@ exports.isUrlArchivedAsync = function(url) {
   return new Promise ((resolve, reject) => {
     fs.readFile(exports.paths.archivedSites + '/' + url, function(err, data) {
       if (err) {
-        reject(false);
+        resolve(false);
       } else {
         resolve(true); 
       }

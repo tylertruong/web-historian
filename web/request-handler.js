@@ -2,7 +2,10 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var http = require('../web/http-helpers');
 var fs = require('fs');
+var Promise = require('Bluebird');
+var fsp = Promise.promisifyAll(require('fs'));
 var urlParser = require('url');
+
 
 
 // require more modules/folders here!
@@ -39,22 +42,22 @@ exports.handleRequest = function (req, res) {
       body = body.toString();
       let baseUrl = body.substring(4);
       
-      //archive.isUrlArchived(baseUrl, boolean => {
-      archive.isUrlArchived(baseUrl, boolean => {
-        if (boolean) {
-          fs.readFile(archive.paths.archivedSites + '/' + baseUrl, (err, data) => {
-            res.writeHead(302, http.headers);
-            res.end(data.toString());
-          });
-        } else {
-          archive.addUrlToList(baseUrl, () => {
-            res.writeHead(302, http.headers);
-            fs.readFile(archive.paths.siteAssets + '/loading.html', function(err, data) {
-              res.end(data.toString());
+      archive.isUrlArchivedAsync(baseUrl)
+        .then((boolean) => {
+          if (boolean) {
+            return fsp.readFileAsync(archive.paths.archivedSites + '/' + baseUrl);
+          } else {
+            return archive.addUrlToListAsync(baseUrl).then(() => {
+              return fsp.readFileAsync(archive.paths.siteAssets + '/loading.html');
             });
-          });
-        }
-      });
+          }
+        }).then((data) => {
+          res.writeHead(302, http.headers);
+          res.end(data.toString());
+        }).catch(err => {
+          console.error(err);
+          res.end('You have received an error.');
+        });
     });
   }
 };
